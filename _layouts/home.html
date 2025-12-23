@@ -7,6 +7,16 @@ layout: default
 <div class="posts">
   {% for post in paginator.posts %}
   <section class="post-entry" style="margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+    
+    <div style="background: #fff3cd; border: 2px dashed #ffeeba; padding: 15px; margin-bottom: 20px; font-family: Consolas, monospace; font-size: 13px; line-height: 1.6; border-radius: 8px;">
+      <b style="color: #856404;">🔍 诊断信息:</b><br>
+      文章标题: <span style="color: #0056b3;">{{ post.title }}</span><br>
+      1. Raw Image 路径: <span style="color: red;">"{{ post.image }}"</span><br>
+      2. Absolute URL: <span style="color: #28a745;">{{ post.image | absolute_url }}</span><br>
+      3. Relative URL: <span style="color: #17a2b8;">{{ post.image | relative_url }}</span><br>
+      <hr style="border: 0; border-top: 1px solid #ffeeba;">
+      <small style="color: #666;">* 如果 [1] 是空的，说明 Python 脚本生成的 Front Matter 格式不被 Jekyll 识别。</small>
+    </div>
     <h2 class="post-title" style="margin-bottom: 10px;">
       <a href="{{ post.url | relative_url }}">
         {{ post.title }}
@@ -28,12 +38,13 @@ layout: default
       <a href="{{ post.url | relative_url }}">
         <img src="{{ post.image | absolute_url }}" 
              alt="{{ post.title }}" 
-             style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s;"
-             onmouseover="this.style.transform='scale(1.02)'"
-             onmouseout="this.style.transform='scale(1)'">
+             style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
       </a>
     </div>
+    {% else %}
+    <p style="color: #999; font-style: italic;">(此文章 Front Matter 中未发现 image 属性)</p>
     {% endif %}
+
     {% comment %} <p>{{ post.excerpt | strip_html }}</p> {% endcomment %}
   </section>
   {% endfor %}
