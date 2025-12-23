@@ -6,7 +6,7 @@ layout: null
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navigation - Dark Side of the Moon</title>
+    <title>Dark Side of the Moon - Navigation</title>
     <style>
         body {
             margin: 0;
@@ -33,76 +33,48 @@ layout: null
             overflow: visible;
         }
 
-        /* --- 静态元素样式 --- */
+        /* --- 静态元素 --- */
         .white-light {
             stroke: #fff;
             stroke-width: 2;
-            opacity: 0.8;
-            filter: drop-shadow(0 0 5px white);
+            opacity: 0.9;
+            filter: drop-shadow(0 0 4px white);
         }
 
         .prism {
-            fill: rgba(20, 20, 20, 0.9);
-            stroke: rgba(255, 255, 255, 0.3);
+            fill: rgba(20, 20, 20, 0.95);
+            stroke: rgba(255, 255, 255, 0.4);
             stroke-width: 1;
         }
 
-        /* --- 核心交互逻辑 --- */
-        
-        .beam-group {
+        /* --- 光束样式 --- */
+        .beam {
             cursor: pointer;
-            /* 这一点非常关键：让 group 作为鼠标事件的容器，但 path 自身可能有特殊的事件处理 */
-        }
-
-        /* 1. 隐形触发区 (The Trigger) */
-        .beam-trigger {
-            fill: transparent; /* 完全透明 */
-            /* fill: rgba(255, 0, 0, 0.2);  <-- 调试用：取消注释可以看到触发区 */
-            
-            pointer-events: auto; /* 只有它响应鼠标 */
-        }
-
-        /* 2. 可见光束 (The Visual) */
-        .beam-visual {
             opacity: 0.6;
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s; /* 丝滑的贝塞尔曲线 */
-            transform-origin: 520px 300px; /* 变形原点固定 */
-            pointer-events: none; /* 关键！让鼠标直接穿透它，只去碰下面的 trigger */
+            transition: opacity 0.3s;
+            /* 注意：这里不再需要 transition: transform，因为 JS 会接管形状动画 */
+        }
+        
+        .beam:hover {
+            opacity: 1;
+            filter: drop-shadow(0 0 8px currentColor);
         }
 
-        /* 3. 文字 */
+        /* --- 文字样式 --- */
         .beam-text {
             fill: white;
-            font-size: 20px;
+            font-size: 14px;
             font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.3s 0.1s, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             text-transform: uppercase;
-            pointer-events: none; /* 文字也不阻挡鼠标 */
-            transform-origin: 520px 300px; /* 文字跟随光束一起微调位置 */
+            pointer-events: none; /* 让鼠标穿透文字 */
+            opacity: 0;
+            transition: opacity 0.2s;
+            text-anchor: middle; /* 文字水平居中 */
+            dominant-baseline: middle; /* 文字垂直居中 */
         }
 
-        /* --- 交互状态 --- */
-
-        /* 当鼠标悬停在整个组 (实际上是悬停在 trigger 上) 时 */
-        .beam-group:hover .beam-visual {
-            /* 角度扩大 */
-            transform: scaleY(3.5) scaleX(1.02); 
-            opacity: 1;
-            filter: drop-shadow(0 0 15px currentColor);
-            z-index: 10;
-        }
-
-        /* 文字显现 */
         .beam-group:hover .beam-text {
             opacity: 1;
-            /* 让文字稍微往右移一点，配合光束变大 */
-            transform: translate(20px, 0); 
-        }
-
-        /* 聚光灯效果：当有一个被选中时，其他的变暗 */
-        .spectrum:hover .beam-group:not(:hover) .beam-visual {
-            opacity: 0.1;
         }
 
         /* --- 颜色定义 --- */
@@ -139,53 +111,155 @@ layout: null
     <a href="/" class="back-home">← Back to Home</a>
 
     <div class="scene-container">
-        <svg viewBox="0 0 1000 600">
+        <svg viewBox="0 0 1000 600" id="main-svg">
             <polygon class="prism" points="400,450 600,450 500,250" />
 
             <line x1="0" y1="380" x2="440" y2="330" class="white-light" />
             <line x1="440" y1="330" x2="520" y2="300" class="white-light" style="opacity: 0.3; stroke-width: 1;" />
 
-            <g class="spectrum">
-                
-                <a href="/category/transformer" class="beam-group color-red">
-                    <path class="beam-trigger" d="M 520 300 L 1000 300 L 1000 380 Z" />
-                    <path class="beam-visual"  d="M 520 300 L 1000 350 L 1000 380 Z" />
-                    <text x="820" y="365" class="beam-text">Transformer</text>
+            <g id="spectrum-layer">
+                <a href="/category/transformer" class="beam-group" data-index="0">
+                    <path class="beam color-red" d="" />
+                    <text class="beam-text" x="0" y="0">Transformer</text>
                 </a>
 
-                <a href="/category/machine-learning" class="beam-group color-orange">
-                    <path class="beam-trigger" d="M 520 300 L 1000 380 L 1000 410 Z" />
-                    <path class="beam-visual"  d="M 520 300 L 1000 380 L 1000 410 Z" />
-                    <text x="820" y="405" class="beam-text">ML / DL</text>
+                <a href="/category/machine-learning" class="beam-group" data-index="1">
+                    <path class="beam color-orange" d="" />
+                    <text class="beam-text" x="0" y="0">ML / DL</text>
                 </a>
 
-                <a href="/category/math" class="beam-group color-yellow">
-                    <path class="beam-trigger" d="M 520 300 L 1000 410 L 1000 440 Z" />
-                    <path class="beam-visual"  d="M 520 300 L 1000 410 L 1000 440 Z" />
-                    <text x="820" y="435" class="beam-text">Math</text>
+                <a href="/category/math" class="beam-group" data-index="2">
+                    <path class="beam color-yellow" d="" />
+                    <text class="beam-text" x="0" y="0">Math</text>
                 </a>
 
-                <a href="/archives" class="beam-group color-green">
-                    <path class="beam-trigger" d="M 520 300 L 1000 440 L 1000 470 Z" />
-                    <path class="beam-visual"  d="M 520 300 L 1000 440 L 1000 470 Z" />
-                    <text x="820" y="465" class="beam-text">Archives</text>
+                <a href="/archives" class="beam-group" data-index="3">
+                    <path class="beam color-green" d="" />
+                    <text class="beam-text" x="0" y="0">Archives</text>
                 </a>
 
-                <a href="/about" class="beam-group color-blue">
-                    <path class="beam-trigger" d="M 520 300 L 1000 470 L 1000 500 Z" />
-                    <path class="beam-visual"  d="M 520 300 L 1000 470 L 1000 500 Z" />
-                    <text x="820" y="495" class="beam-text">About</text>
+                <a href="/about" class="beam-group" data-index="4">
+                    <path class="beam color-blue" d="" />
+                    <text class="beam-text" x="0" y="0">About</text>
                 </a>
 
-                <a href="https://github.com/LionKk99" class="beam-group color-purple">
-                    <path class="beam-trigger" d="M 520 300 L 1000 500 L 1000 600 Z" />
-                    <path class="beam-visual"  d="M 520 300 L 1000 500 L 1000 530 Z" />
-                    <text x="820" y="525" class="beam-text">GitHub</text>
+                <a href="https://github.com/LionKk99" class="beam-group" data-index="5">
+                    <path class="beam color-purple" d="" />
+                    <text class="beam-text" x="0" y="0">GitHub</text>
                 </a>
-
             </g>
         </svg>
     </div>
 
+    <script>
+        // === 配置参数 ===
+        // 光束起始点（棱镜出光点）
+        const ORIGIN = { x: 520, y: 300 };
+        // 光束终点 X 坐标
+        const END_X = 1000;
+        // 光束在右侧的总垂直范围 (Y轴)
+        const Y_START = 300;
+        const Y_END = 550; // 你可以调整这个值来改变光束的总开角
+        const TOTAL_HEIGHT = Y_END - Y_START;
+
+        // 动画平滑系数 (0.05 ~ 0.2, 越小越慢越丝滑)
+        const LERP_FACTOR = 0.1;
+        
+        // 激活时的膨胀倍数 (5 表示激活的光束是其他的 5 倍宽)
+        const ACTIVE_WEIGHT = 6;
+        const NORMAL_WEIGHT = 1;
+
+        // === 状态管理 ===
+        const groups = document.querySelectorAll('.beam-group');
+        const paths = document.querySelectorAll('.beam');
+        const texts = document.querySelectorAll('.beam-text');
+        
+        // 当前的权重 (用于动画插值)
+        let currentWeights = [1, 1, 1, 1, 1, 1];
+        // 目标的权重 (根据鼠标位置改变)
+        let targetWeights = [1, 1, 1, 1, 1, 1];
+
+        // 线性插值函数 (Linear Interpolation)
+        function lerp(start, end, factor) {
+            return start + (end - start) * factor;
+        }
+
+        // === 核心动画循环 ===
+        function animate() {
+            let needsUpdate = false;
+
+            // 1. 更新权重 (让 current 向 target 靠近)
+            for (let i = 0; i < 6; i++) {
+                const diff = targetWeights[i] - currentWeights[i];
+                if (Math.abs(diff) > 0.001) {
+                    currentWeights[i] = lerp(currentWeights[i], targetWeights[i], LERP_FACTOR);
+                    needsUpdate = true;
+                } else {
+                    currentWeights[i] = targetWeights[i]; // 修正微小误差
+                }
+            }
+
+            // 如果权重有变化，或者刚开始，就需要重绘 SVG
+            // (这里简化逻辑，一直运行以保持最顺滑，或者你可以加个标志位优化性能)
+            drawBeams();
+
+            requestAnimationFrame(animate);
+        }
+
+        // === 绘制逻辑 ===
+        function drawBeams() {
+            // 计算总权重
+            const totalWeight = currentWeights.reduce((a, b) => a + b, 0);
+
+            let currentY = Y_START;
+
+            for (let i = 0; i < 6; i++) {
+                // 计算当前光束在右侧的高度
+                // 高度占比 = 当前权重 / 总权重
+                const height = (currentWeights[i] / totalWeight) * TOTAL_HEIGHT;
+                
+                const y1 = currentY;
+                const y2 = currentY + height;
+
+                // 构建梯形路径: 起点 -> 右上 -> 右下 -> 回到起点
+                const d = `M ${ORIGIN.x} ${ORIGIN.y} L ${END_X} ${y1} L ${END_X} ${y2} Z`;
+                paths[i].setAttribute('d', d);
+
+                // 更新文字位置 (放在光束右侧的中心)
+                const textX = END_X - 100; // 文字距离右边缘 100px
+                const textY = y1 + height / 2; // 垂直居中
+                
+                texts[i].setAttribute('x', textX);
+                texts[i].setAttribute('y', textY);
+                // 根据光束高度缩放文字大小? (可选，这里保持固定大小更易读)
+                
+                // 更新下一个光束的起始 Y
+                currentY += height;
+            }
+        }
+
+        // === 事件监听 ===
+        groups.forEach(group => {
+            const index = parseInt(group.getAttribute('data-index'));
+
+            group.addEventListener('mouseenter', () => {
+                // 设置目标：当前变大，其他恢复默认
+                for (let i = 0; i < 6; i++) {
+                    targetWeights[i] = (i === index) ? ACTIVE_WEIGHT : NORMAL_WEIGHT;
+                }
+            });
+
+            group.addEventListener('mouseleave', () => {
+                // 恢复所有默认
+                // 这是一个可选设计：鼠标离开后是保持最后状态，还是回弹？
+                // 如果想回弹到均分状态，取消下面这行的注释：
+                for (let i = 0; i < 6; i++) { targetWeights[i] = NORMAL_WEIGHT; }
+            });
+        });
+
+        // 启动动画循环
+        animate();
+
+    </script>
 </body>
 </html>
