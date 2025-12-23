@@ -25,6 +25,11 @@ def process_md_files():
                 current_post_img_dir = os.path.join(BLOG_IMAGES_BASE, rel_dir)
                 if not os.path.exists(current_post_img_dir):
                     os.makedirs(current_post_img_dir)
+                
+                # --- 新增：为文章创建镜像 _posts 目录 ---
+                current_post_md_dir = os.path.join(POSTS_DIR, rel_dir)
+                if not os.path.exists(current_post_md_dir):
+                    os.makedirs(current_post_md_dir)
 
                 # 3. 读取内容
                 with open(old_path, 'r', encoding='utf-8') as f:
@@ -33,10 +38,10 @@ def process_md_files():
                 # 4. 提取第一张图作为封面图 (匹配 ![[...]])
                 first_img_match = re.search(r'!\[\[(.*?)\]\]', content)
                 featured_image = ""
+                web_rel_path = rel_dir.replace(os.sep, '/')
+                
                 if first_img_match:
                     img_name = os.path.basename(first_img_match.group(1))
-                    web_rel_path = rel_dir.replace(os.sep, '/')
-                    # 如果是根目录，去掉前面的 ./
                     if web_rel_path == ".":
                         featured_image = f"/images/{img_name}"
                     else:
@@ -47,7 +52,6 @@ def process_md_files():
                     full_img_path = match.group(1)
                     img_name = os.path.basename(full_img_path)
                     
-                    # 搜索图片逻辑：优先找同级 imgs 文件夹，找不到则找 md 同级
                     source_img = os.path.join(root, "imgs", img_name)
                     if not os.path.exists(source_img):
                         source_img = os.path.join(root, img_name)
@@ -55,7 +59,6 @@ def process_md_files():
                     if os.path.exists(source_img):
                         shutil.copy2(source_img, os.path.join(current_post_img_dir, img_name))
                     
-                    web_rel_path = rel_dir.replace(os.sep, '/')
                     if web_rel_path == ".":
                         web_img_path = f"/images/{img_name}"
                     else:
@@ -69,11 +72,10 @@ def process_md_files():
                 yesterday = datetime.now() - timedelta(days=1)
                 date_prefix = yesterday.strftime("%Y-%m-%d")
                 
-                # 修正此处的变量名：使用 rel_dir 判断
                 categories = rel_dir.split(os.sep) if rel_dir != "." else ["Uncategorized"]
-                
                 image_field = f'image: "{featured_image}"' if featured_image else ""
                 
+                # 重点：确保 image: 字段没有缩进，且位于横线之间
                 front_matter = f"""---
 layout: post
 title: "{pure_name}"
@@ -86,13 +88,15 @@ toc: true
 ---
 
 """
-                # 7. 写入新文件
+                # 7. 写入新文件 (写入到对应的镜像子目录)
                 new_file_name = f"{date_prefix}-{pure_name}.md"
-                with open(os.path.join(POSTS_DIR, new_file_name), 'w', encoding='utf-8') as f:
+                final_dest_path = os.path.join(current_post_md_dir, new_file_name)
+                
+                with open(final_dest_path, 'w', encoding='utf-8') as f:
                     f.write(front_matter + new_content)
                 
-                print(f"✅ 已同步: {pure_name} (路径: {rel_dir})")
+                print(f"✅ 已同步文章: {final_dest_path}")
 
 if __name__ == "__main__":
     process_md_files()
-    print("\n--- 所有笔记同步完成 ---")
+    print("\n--- 镜像同步完成：_posts 与 images 均已保持层级 ---")

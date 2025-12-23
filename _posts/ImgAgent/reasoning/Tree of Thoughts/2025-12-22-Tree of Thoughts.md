@@ -3,7 +3,8 @@ layout: post
 title: "Tree of Thoughts"
 date: 2025-12-22 10:00:00 +0800
 categories: ['ImgAgent', 'reasoning', 'Tree of Thoughts']
-tags: ['ImgAgent', 'reasoning']
+tags: ['ImgAgent', 'reasoning', 'Tree of Thoughts']
+image: "/images/ImgAgent/reasoning/Tree of Thoughts/F1.png"
 math: true
 toc: true
 ---

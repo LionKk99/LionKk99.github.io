@@ -3,7 +3,8 @@ layout: post
 title: "Plan-and-Solve Prompting"
 date: 2025-12-22 10:00:00 +0800
 categories: ['ImgAgent', 'reasoning', 'Plan-and-Solve Prompting']
-tags: ['ImgAgent', 'reasoning']
+tags: ['ImgAgent', 'reasoning', 'Plan-and-Solve Prompting']
+image: "/images/ImgAgent/reasoning/Plan-and-Solve Prompting/F2.png"
 math: true
 toc: true
 ---

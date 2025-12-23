@@ -3,7 +3,8 @@ layout: post
 title: "SELF-CONSISTENCY"
 date: 2025-12-22 10:00:00 +0800
 categories: ['ImgAgent', 'reasoning', 'SELF-CONSISTENCY']
-tags: ['ImgAgent', 'reasoning']
+tags: ['ImgAgent', 'reasoning', 'SELF-CONSISTENCY']
+image: "/images/ImgAgent/reasoning/SELF-CONSISTENCY/F1.png"
 math: true
 toc: true
 ---
