@@ -2,14 +2,14 @@
 layout: post
 title: "A Comprehensive Survey of Self-Evolving AI Agents"
 date: 2025-12-22 10:00:00 +0800
-categories: ['ImgAgent', 'agent', 'A Comprehensive Survey of Self-Evolving AI Agents']
-tags: ['ImgAgent', 'agent', 'A Comprehensive Survey of Self-Evolving AI Agents']
-image: "/images/ImgAgent/agent/A Comprehensive Survey of Self-Evolving AI Agents/F1.png"
+categories: ['ImgAgent', 'agent', 'A_Comprehensive_Survey_of_Self-Evolving_AI_Agents']
+tags: ['ImgAgent', 'agent', 'A_Comprehensive_Survey_of_Self-Evolving_AI_Agents']
+image: "/images/ImgAgent/agent/A_Comprehensive_Survey_of_Self-Evolving_AI_Agents/F1.png"
 math: true
 toc: true
 ---
 
-![F1.png]({{ "/images/ImgAgent/agent/A Comprehensive Survey of Self-Evolving AI Agents/F1.png" | absolute_url }})
+![F1.png]({{ "/images/ImgAgent/agent/A_Comprehensive_Survey_of_Self-Evolving_AI_Agents/F1.png" | absolute_url }})
 ### Intro 
 Limitation: LLM remain static after deployment.
 Solution: Self-evolving AI agent (interaction data and environmental feedback), bridge the static capabilities of foundation models with the continuous adaptability.
@@ -53,7 +53,7 @@ Self-evolving AI agents are autonomous systems that continuously and systematica
 - MAO (Multi-Agent Orchestration): 多个LLM通过消息交换和辩论进行通信协作
 - MASE (Multi-Agent Self-Evolving): 根据环境反馈和元奖励不断改进其提示、记忆、工具的策略，达到终身自演化循环
 
-![T1.png]({{ "/images/ImgAgent/agent/A Comprehensive Survey of Self-Evolving AI Agents/T1.png" | absolute_url }})
+![T1.png]({{ "/images/ImgAgent/agent/A_Comprehensive_Survey_of_Self-Evolving_AI_Agents/T1.png" | absolute_url }})
 人工智能代理演化和优化技术的三大方向：单代理优化、多代理优化和领域特定优化
-![F2.png]({{ "/images/ImgAgent/agent/A Comprehensive Survey of Self-Evolving AI Agents/F2.png" | absolute_url }})
+![F2.png]({{ "/images/ImgAgent/agent/A_Comprehensive_Survey_of_Self-Evolving_AI_Agents/F2.png" | absolute_url }})
 ### Foundation of AI Agent Systems

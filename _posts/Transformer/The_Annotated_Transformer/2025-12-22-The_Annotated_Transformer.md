@@ -2,9 +2,9 @@
 layout: post
 title: "The Annotated Transformer"
 date: 2025-12-22 10:00:00 +0800
-categories: ['Transformer', 'The Annotated Transformer']
-tags: ['Transformer', 'The Annotated Transformer']
-image: "/images/Transformer/The Annotated Transformer/F.png"
+categories: ['Transformer', 'The_Annotated_Transformer']
+tags: ['Transformer', 'The_Annotated_Transformer']
+image: "/images/Transformer/The_Annotated_Transformer/F.png"
 math: true
 toc: true
 ---
@@ -17,7 +17,7 @@ Link：[The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transf
 自注意力机制（有时也称为序列内注意力机制）是一种将单个序列的不同位置关联起来以计算序列表示的注意力机制。自注意力机制已成功应用于多种任务，包括阅读理解、抽象式文本摘要、文本蕴含以及学习与任务无关的句子表示。端到端记忆网络基于循环注意力机制而非序列对齐循环，并且已证明在简单语言问答和语言建模任务中表现良好。
 
 Transformer 是第一个完全依靠自注意力机制来计算其输入和输出表示，而无需使用序列对齐的 RNN 或卷积的转换模型。
-![F.png]({{ "/images/Transformer/The Annotated Transformer/F.png" | absolute_url }})
+![F.png]({{ "/images/Transformer/The_Annotated_Transformer/F.png" | absolute_url }})
 ## Structure
 
 我们按照自顶向下的方式来对Transformer这个结构进行刨析：
@@ -126,7 +126,7 @@ class EncoderDecoder(nn.Module):
 - d_model： 选择的词嵌入维度，一般为512
 
 ### Generator
-![F 1.png]({{ "/images/Transformer/The Annotated Transformer/F 1.png" | absolute_url }})
+![F_1.png]({{ "/images/Transformer/The_Annotated_Transformer/F_1.png" | absolute_url }})
 模型最顶部的部分，也最好理解，只是一个常规的分类输出头：
 ```python
 class Generator(nn.Module):
@@ -156,8 +156,8 @@ class Generator(nn.Module):
 - 在Pre-softmax Linear 层我们需要矩阵乘法$\text{Scores} = h \times W^T$ （输出向量 $h$ 分别与 $W$ 中的每一行（即每个单词的词向量）做点积。点积结果越大，说明 $h$ 与该单词越相似，模型预测该单词的概率就越高。）
 ### Positional Encoding
 除了上述的token的embedding以外，由于transformer是属于token并行处理（只计算其与其他位置token的注意力分数），还需要PE来进行位置表示才能理解语序（你爱我/我爱你）
-![F 4.png]({{ "/images/Transformer/The Annotated Transformer/F 4.png" | absolute_url }})
-![F 2.png]({{ "/images/Transformer/The Annotated Transformer/F 2.png" | absolute_url }})
+![F_4.png]({{ "/images/Transformer/The_Annotated_Transformer/F_4.png" | absolute_url }})
+![F_2.png]({{ "/images/Transformer/The_Annotated_Transformer/F_2.png" | absolute_url }})
 使用不同频率的sin和cos函数来做位置编码，pos是token在句中的位置，i是其维度。
 所以每个维度的PE都对应了一个正弦波，波长从2π to 10000⋅2π并构成等比数列。
 从图中也可以发现，列（dim）直接是交错的sin/cos，并沿着行的方向进行变化，dim小的列变化快，dim大的列变化慢。
@@ -199,10 +199,10 @@ class PositionalEncoding(nn.Module):
 给定相对offset K， PE（pos+K）可以以PE（pos）的线性表示出来。
 $\sin(a+b) = \sin(a)\cos(b) + \cos(a)\sin(b)$
 
-![F 3.png]({{ "/images/Transformer/The Annotated Transformer/F 3.png" | absolute_url }})
+![F_3.png]({{ "/images/Transformer/The_Annotated_Transformer/F_3.png" | absolute_url }})
 维度低时频率高（秒针），维度高时频率低（时针）
 ### Position-wise Feed-Forward Networks
-![F 5.png]({{ "/images/Transformer/The Annotated Transformer/F 5.png" | absolute_url }})
+![F_5.png]({{ "/images/Transformer/The_Annotated_Transformer/F_5.png" | absolute_url }})
 简单的组成部分，编码器和解码器中的每一层都包含一个两层的FFN，模型中dmodel​=512, dff​=2048.
 ```python
 class PositionwiseFeedForward(nn.Module):
@@ -302,7 +302,7 @@ class SublayerConnection(nn.Module):
 - **LayerNorm**：平移缩放（减均值，除方差）。    
 - **RMSNorm**：仅缩放（除以均值的平方根）。    
 #### Encoder
-![F 6.png]({{ "/images/Transformer/The Annotated Transformer/F 6.png" | absolute_url }})
+![F_6.png]({{ "/images/Transformer/The_Annotated_Transformer/F_6.png" | absolute_url }})
 ```python
 class Encoder(nn.Module):
 
@@ -428,10 +428,10 @@ def subsequent_mask(size):
     return subsequent_mask == 0
 ```
 上述代码其实相当于一个下三角矩阵(包含主对角线), 这是因为在上实现中第一个token是特殊的开始符号SOS
-![F 7.png]({{ "/images/Transformer/The Annotated Transformer/F 7.png" | absolute_url }})
+![F_7.png]({{ "/images/Transformer/The_Annotated_Transformer/F_7.png" | absolute_url }})
 #### Attention
-![F 9.png]({{ "/images/Transformer/The Annotated Transformer/F 9.png" | absolute_url }})
-![F 8.png]({{ "/images/Transformer/The Annotated Transformer/F 8.png" | absolute_url }})
+![F_9.png]({{ "/images/Transformer/The_Annotated_Transformer/F_9.png" | absolute_url }})
+![F_8.png]({{ "/images/Transformer/The_Annotated_Transformer/F_8.png" | absolute_url }})
 ```python
 def attention(query, key, value, mask = None, dropout=None):
 
@@ -451,7 +451,7 @@ def attention(query, key, value, mask = None, dropout=None):
 
     return torch.matmul(p_attn, value), p_attn
 ```
-![F 10.png]({{ "/images/Transformer/The Annotated Transformer/F 10.png" | absolute_url }})![F 11.png]({{ "/images/Transformer/The Annotated Transformer/F 11.png" | absolute_url }})
+![F_10.png]({{ "/images/Transformer/The_Annotated_Transformer/F_10.png" | absolute_url }})![F_11.png]({{ "/images/Transformer/The_Annotated_Transformer/F_11.png" | absolute_url }})
 ```python
 class MultiHeadAttention(nn.Module):
 
@@ -533,7 +533,7 @@ class MultiHeadAttention(nn.Module):
 你可以把 transpose 看作是“调整座次表”，而 .contiguous() 则是“让大家按照新座次表真正地起身换座位”。只有换完座，才能进行下一步的整体合影（view）。
 
 实现中lenth经常是用-1参数自动计算，因为每个batch中的lenth不一定相同。
-![F 12.png]({{ "/images/Transformer/The Annotated Transformer/F 12.png" | absolute_url }})
+![F_12.png]({{ "/images/Transformer/The_Annotated_Transformer/F_12.png" | absolute_url }})
 ## Training
 ```python
 class Batch:

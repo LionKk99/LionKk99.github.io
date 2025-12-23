@@ -2,14 +2,14 @@
 layout: post
 title: "Tree of Thoughts"
 date: 2025-12-22 10:00:00 +0800
-categories: ['ImgAgent', 'reasoning', 'Tree of Thoughts']
-tags: ['ImgAgent', 'reasoning', 'Tree of Thoughts']
-image: "/images/ImgAgent/reasoning/Tree of Thoughts/F1.png"
+categories: ['ImgAgent', 'reasoning', 'Tree_of_Thoughts']
+tags: ['ImgAgent', 'reasoning', 'Tree_of_Thoughts']
+image: "/images/ImgAgent/reasoning/Tree_of_Thoughts/F1.png"
 math: true
 toc: true
 ---
 
-![F1.png]({{ "/images/ImgAgent/reasoning/Tree of Thoughts/F1.png" | absolute_url }})
+![F1.png]({{ "/images/ImgAgent/reasoning/Tree_of_Thoughts/F1.png" | absolute_url }})
 ### Related Work
 - [[Chain-of-Thought]]
 - [[SELF-CONSISTENCY]]
@@ -34,10 +34,10 @@ Solution: 对于不同的问题采用不同方法。如24点，保留一行equat
 Solution: 存在两种
 （a）独立同分布 (i.i.d.) 采样
 $k$ 个候选思考 $z^{(j)}$ 是独立地从模型中采样出来的。这样思考空间 “丰富”（rich），即下一步的思考有很多可能性，且彼此之间差异较大。（创意写作）
-![F4.png]({{ "/images/ImgAgent/reasoning/Tree of Thoughts/F4.png" | absolute_url }})
+![F4.png]({{ "/images/ImgAgent/reasoning/Tree_of_Thoughts/F4.png" | absolute_url }})
 （b)  顺序提议 (Sequential Proposing)
 模型被提示一次性输出一个包含 $k$ 个候选思考的列表或序列 $[\mathbf{z}^{(1)}, \cdots, \mathbf{z}^{(k)}]$。思考空间 “受限”（constrained），即下一步的思考选项较少、较具体，这样有助于避免重复。（24点）
-![F2.png]({{ "/images/ImgAgent/reasoning/Tree of Thoughts/F2.png" | absolute_url }})
+![F2.png]({{ "/images/ImgAgent/reasoning/Tree_of_Thoughts/F2.png" | absolute_url }})
 - 如何启发式评估状态?
 Solution: 使用LM来主动推理状态，两种方式:
 （a）Value
