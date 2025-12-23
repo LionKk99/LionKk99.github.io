@@ -6,307 +6,216 @@ layout: null
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dark Side of the Moon - Prism</title>
+    <title>Dark Side of the Moon - Final Revised</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #050505;
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
+        body { margin: 0; padding: 0; background-color: #000; height: 100vh; width: 100vw; display: flex; justify-content: center; align-items: center; font-family: 'Helvetica Neue', Arial, sans-serif; overflow: hidden; }
+        .scene-container { width: 100%; height: 100%; position: relative; }
+        svg { width: 100%; height: 100%; overflow: visible; }
+
+        /* --- 滤镜定义 --- */
+        .dissipate-effect { filter: url(#beam-dissipation); }
+        .static-grain-effect { filter: url(#static-grain); }
+
+        /* --- 1. 棱镜系统 --- */
+        .prism-fill { 
+            fill: rgba(12, 12, 12, 0.95); 
+            filter: drop-shadow(0 0 30px rgba(255,255,255,0.05)); 
+        }
+        
+        /* 修正：光晕变细 (Thinner Glow) */
+        .prism-inner-glow {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.5); 
+            stroke-width: 20; /* 从 40 减小到 20，更精致 */
+            stroke-linejoin: round;
+            filter: url(#static-grain) blur(4px);
+            mix-blend-mode: screen; 
+            opacity: 0.9;
+        }
+        
+        /* 修正：线条加粗 (Thicker Line) */
+        .prism-outline { 
+            fill: none; 
+            stroke: rgba(255, 255, 255, 0.95); 
+            stroke-width: 3; /* 从 1.5 增加到 3，更硬朗 */
+            stroke-linejoin: round; 
         }
 
-        .scene-container {
-            width: 100%;
-            max-width: 1100px;
-            position: relative;
-        }
-
-        svg {
-            width: 100%;
-            height: auto;
-            overflow: visible;
-        }
-
-        /* --- 1. 棱镜样式 (实物感) --- */
-        .prism {
-            fill: #0a0a0a; /* 接近黑色 */
-            stroke: rgba(255, 255, 255, 0.3);
-            stroke-width: 1;
-            /* 外部辉光滤镜在 SVG defs 中定义 */
-        }
-
-        /* --- 2. 光线样式 --- */
-        .white-light {
-            stroke: #fff;
-            stroke-width: 2.5;
+        /* --- 2. 内部光路 (保持噪点质感) --- */
+        .internal-wedge {
+            fill: url(#internal-gradient);
+            pointer-events: none;
+            mix-blend-mode: normal; 
             opacity: 0.95;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
+            filter: url(#beam-dissipation); /* 内部依然保留消散质感 */
+        }
+
+        /* --- 3. 入射白光 --- */
+        .white-beam {
+            stroke: #fff;
+            stroke-width: 6; 
+            filter: drop-shadow(0 0 15px rgba(255,255,255,1));
             stroke-linecap: round;
         }
 
-        /* 内部光路 (三角形) */
-        .internal-light-path {
-            /* 填充色在 SVG 中引用渐变 */
-            opacity: 0.6; 
-            pointer-events: none;
-            mix-blend-mode: screen; /* 混合模式让光看起来更亮 */
+        /* --- 4. 外部光谱 (修正：移除蒙版滤镜) --- */
+        .spectrum-beam { 
+            opacity: 0.9; 
+            transition: opacity 0.3s; 
+            cursor: pointer; 
+            mix-blend-mode: screen;
+            /* 关键修改：移除了 filter: url(#beam-dissipation); 
+               现在光束是实心的、清晰的 */
         }
 
-        /* 外部光束 */
-        .beam {
-            cursor: pointer;
-            opacity: 0.7; 
-            transition: opacity 0.3s;
+        .beam-group:hover .spectrum-beam { 
+            opacity: 1; 
+            /* 悬停时只增加辉光，不加噪点 */
+            filter: drop-shadow(0 0 20px currentColor); 
+            z-index: 10; 
         }
-        
-        .beam:hover {
-            opacity: 1;
-            filter: drop-shadow(0 0 10px currentColor);
-            z-index: 10;
-        }
+        .spectrum-layer:hover .beam-group:not(:hover) .spectrum-beam { opacity: 0.1; }
 
-        /* --- 3. 文字样式 --- */
-        .beam-text {
-            fill: white;
-            font-size: 14px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            pointer-events: none; 
-            opacity: 0;
-            transition: opacity 0.2s;
-            text-anchor: start; /* 左对齐 */
-            dominant-baseline: middle; 
-            text-shadow: 0 0 5px rgba(0,0,0,0.8);
-        }
+        /* --- 文字 --- */
+        .beam-text { fill: #fff; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; opacity: 0; pointer-events: none; transition: all 0.3s; }
+        .beam-group:hover .beam-text { opacity: 1; transform: translateX(20px); }
 
-        .beam-group:hover .beam-text {
-            opacity: 1;
-        }
-
-        /* --- 颜色定义 --- */
-        .color-red    { fill: #ff0000; color: #ff0000; }
-        .color-orange { fill: #ff7f00; color: #ff7f00; }
-        .color-yellow { fill: #ffff00; color: #ffff00; }
-        .color-green  { fill: #00ff00; color: #00ff00; }
-        .color-blue   { fill: #0000ff; color: #0000ff; }
-        .color-purple { fill: #8b00ff; color: #8b00ff; }
-
-        /* 返回按钮 */
-        .back-home {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: rgba(255,255,255,0.4);
-            text-decoration: none;
-            font-size: 14px;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: 0.3s;
-            z-index: 100;
-        }
-        .back-home:hover {
-            color: white;
-            border-color: white;
-            background: rgba(255,255,255,0.1);
-        }
+        /* 颜色 */
+        .c-red { fill: #ff1a1a; color: #ff1a1a; }
+        .c-orange { fill: #ff9900; color: #ff9900; }
+        .c-yellow { fill: #ffe600; color: #ffe600; }
+        .c-green { fill: #00e600; color: #00e600; }
+        .c-blue { fill: #0055ff; color: #0055ff; }
+        .c-purple { fill: #8800ff; color: #8800ff; }
     </style>
 </head>
 <body>
 
-    <a href="/" class="back-home">← Back to Home</a>
-
     <div class="scene-container">
-        <svg viewBox="0 0 1000 600" id="main-svg">
-            
+        <svg viewBox="0 0 1200 800" id="stage">
             <defs>
-                <filter id="prism-glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="15" result="blur" />
-                    <feColorMatrix in="blur" type="matrix" values="
-                        0 0 0 0 1 
-                        0 0 0 0 1 
-                        0 0 0 0 1 
-                        0 0 0 0.15 0" result="glow" />
-                    <feMerge>
-                        <feMergeNode in="glow" />
-                        <feMergeNode in="SourceGraphic" />
-                    </feMerge>
+                <filter id="beam-dissipation" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" result="noise" />
+                    <feImage xlink:href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='35%25' stop-color='white'/%3E%3Cstop offset='100%25' stop-color='black'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3C/svg%3E" 
+                             result="mask" preserveAspectRatio="none" />
+                    <feComposite in="noise" in2="mask" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="weighted-noise" />
+                    <feColorMatrix in="weighted-noise" type="matrix" values="0 0 0 0 1 
+                                                                           0 0 0 0 1 
+                                                                           0 0 0 0 1 
+                                                                           0 0 0 1.8 -0.2" result="final-alpha" />
+                    <feComposite operator="in" in="SourceGraphic" in2="final-alpha" />
                 </filter>
 
-                <linearGradient id="internal-grad" x1="0%" y1="50%" x2="100%" y2="50%">
-                    <stop offset="0%" style="stop-color:rgb(255,255,255);stop-opacity:0.9" />
-                    <stop offset="60%" style="stop-color:rgb(255,255,255);stop-opacity:0.1" />
-                    <stop offset="100%" style="stop-color:rgb(0,0,0);stop-opacity:0" />
+                <filter id="static-grain" x="-20%" y="-20%" width="140%" height="140%">
+                    <feTurbulence type="fractalNoise" baseFrequency="1.0" numOctaves="3" result="noise" />
+                    <feColorMatrix in="noise" type="matrix" values="0 0 0 0 1 
+                                                                  0 0 0 0 1 
+                                                                  0 0 0 0 1 
+                                                                  1 0 0 0 0" result="mono-noise" />
+                    <feComposite operator="in" in="SourceGraphic" in2="mono-noise" />
+                </filter>
+
+                <linearGradient id="internal-gradient" x1="0%" y1="50%" x2="100%" y2="50%">
+                    <stop offset="0%" style="stop-color:#ffffff; stop-opacity:1" />
+                    <stop offset="10%" style="stop-color:#ffffff; stop-opacity:0.9" />
+                    <stop offset="25%" style="stop-color:#aaccff; stop-opacity:0.7" /> 
+                    <stop offset="45%" style="stop-color:#4a5a70; stop-opacity:0.4" />
+                    <stop offset="100%" style="stop-color:#000000; stop-opacity:0" />
                 </linearGradient>
             </defs>
 
-            <polygon points="400,450 600,450 500,250" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="20" style="filter: blur(10px);" />
+            <polygon class="prism-fill" points="600,150 350,650 850,650" />
+            
+            <polygon class="prism-inner-glow" points="600,150 350,650 850,650" />
+            
+            <path id="internal-path" class="internal-wedge" d="" />
+            
+            <polygon class="prism-outline" points="600,150 350,650 850,650" />
+            
+            <line id="white-beam" x1="-50" y1="550" x2="0" y2="0" class="white-beam" />
 
-            <path id="internal-light" class="internal-light-path" fill="url(#internal-grad)" d="" />
-
-            <polygon class="prism" points="400,450 600,450 500,250" filter="url(#prism-glow)" />
-
-            <line x1="-50" y1="380" x2="435" y2="335" class="white-light" />
-
-            <g id="spectrum-layer">
+            <g class="spectrum-layer">
                 <a href="/category/transformer" class="beam-group" data-index="0">
-                    <path class="beam color-red" d="" />
-                    <text class="beam-text" x="0" y="0">Transformer</text>
+                    <path class="spectrum-beam c-red" d="" />
+                    <text class="beam-text">Transformer</text>
                 </a>
                 <a href="/category/machine-learning" class="beam-group" data-index="1">
-                    <path class="beam color-orange" d="" />
-                    <text class="beam-text" x="0" y="0">ML / DL</text>
+                    <path class="spectrum-beam c-orange" d="" />
+                    <text class="beam-text">Machine Learning</text>
                 </a>
                 <a href="/category/math" class="beam-group" data-index="2">
-                    <path class="beam color-yellow" d="" />
-                    <text class="beam-text" x="0" y="0">Math</text>
+                    <path class="spectrum-beam c-yellow" d="" />
+                    <text class="beam-text">Mathematics</text>
                 </a>
                 <a href="/archives" class="beam-group" data-index="3">
-                    <path class="beam color-green" d="" />
-                    <text class="beam-text" x="0" y="0">Archives</text>
+                    <path class="spectrum-beam c-green" d="" />
+                    <text class="beam-text">Archives</text>
                 </a>
                 <a href="/about" class="beam-group" data-index="4">
-                    <path class="beam color-blue" d="" />
-                    <text class="beam-text" x="0" y="0">About</text>
+                    <path class="spectrum-beam c-blue" d="" />
+                    <text class="beam-text">About Me</text>
                 </a>
                 <a href="https://github.com/LionKk99" class="beam-group" data-index="5">
-                    <path class="beam color-purple" d="" />
-                    <text class="beam-text" x="0" y="0">GitHub</text>
+                    <path class="spectrum-beam c-purple" d="" />
+                    <text class="beam-text">GitHub</text>
                 </a>
             </g>
         </svg>
     </div>
 
     <script>
-        // === 几何配置 ===
-        
-        // 1. 中心轴线 Y (Center Axis)
-        // 这是白光入射的高度，也是光谱展开的中心轴
-        const CENTER_Y = 335; 
+        const P_TOP = { x: 600, y: 150 }, P_LEFT = { x: 350, y: 650 }, P_RIGHT = { x: 850, y: 650 };
+        const ENTRY_Y = 380, EXIT_CENTER_Y = 380, EXIT_SPREAD = 100;
+        const SCREEN_X = 1200, SCREEN_CENTER_Y = 500, SCREEN_SPREAD_IDLE = 200, SCREEN_SPREAD_ACTIVE = 400;
+        const LERP = 0.08, HOVER_WEIGHT = 2.5;
 
-        // 2. 关键X坐标
-        // 内部光路起点 (入射点)
-        const ENTRY_POINT = { x: 435, y: 335 };
-        // 棱镜出射面 X 坐标 (光谱开始的地方)
-        const EXIT_X = 535; 
-        // 屏幕右边缘
-        const END_X = 1100;
+        const whiteBeam = document.getElementById('white-beam'), internalPath = document.getElementById('internal-path');
+        const groups = document.querySelectorAll('.beam-group'), paths = document.querySelectorAll('.spectrum-beam'), texts = document.querySelectorAll('.beam-text');
 
-        // 3. 高度配置
-        // 静止时的光谱总高度 (较窄，为了平行感)
-        const IDLE_TOTAL_HEIGHT = 120; 
-        // 激活时的光谱总高度 (展开)
-        const ACTIVE_TOTAL_HEIGHT = 300; 
+        const ENTRY_POINT = { x: (P_TOP.x + (ENTRY_Y - P_TOP.y) * (P_LEFT.x - P_TOP.x) / (P_LEFT.y - P_TOP.y)), y: ENTRY_Y };
+        whiteBeam.setAttribute('x2', ENTRY_POINT.x); whiteBeam.setAttribute('y2', ENTRY_POINT.y); whiteBeam.setAttribute('y1', 500);
 
-        // 动画参数
-        const LERP_FACTOR = 0.1;
-        const ACTIVE_WEIGHT = 6; 
-        const NORMAL_WEIGHT = 1;
+        let currentWeights = [1, 1, 1, 1, 1, 1], targetWeights = [1, 1, 1, 1, 1, 1];
 
-        // === DOM 元素 ===
-        const groups = document.querySelectorAll('.beam-group');
-        const paths = document.querySelectorAll('.beam');
-        const texts = document.querySelectorAll('.beam-text');
-        const internalLightPath = document.getElementById('internal-light');
-        
-        // 权重状态
-        let currentWeights = [1, 1, 1, 1, 1, 1];
-        let targetWeights = [1, 1, 1, 1, 1, 1];
-
-        function lerp(start, end, factor) {
-            return start + (end - start) * factor;
-        }
-
-        // === 动画循环 ===
         function animate() {
-            // 1. 计算权重
             let totalWeight = 0;
-            let isHovering = false;
-
             for (let i = 0; i < 6; i++) {
-                // 平滑过渡权重
-                if (Math.abs(targetWeights[i] - currentWeights[i]) > 0.001) {
-                    currentWeights[i] = lerp(currentWeights[i], targetWeights[i], LERP_FACTOR);
-                } else {
-                    currentWeights[i] = targetWeights[i];
-                }
-                
+                currentWeights[i] = currentWeights[i] + (targetWeights[i] - currentWeights[i]) * LERP;
                 totalWeight += currentWeights[i];
-                if (targetWeights[i] > 1.1) isHovering = true;
             }
 
-            // 2. 计算当前的动态总高度
-            // 根据 totalWeight 的大小来决定总高度
-            // 如果 totalWeight 接近 6 (默认)，高度接近 IDLE_TOTAL_HEIGHT
-            // 如果 totalWeight 接近 (5 + ACTIVE_WEIGHT)，高度接近 ACTIVE_TOTAL_HEIGHT
-            const maxWeight = 5 + ACTIVE_WEIGHT;
-            const ratio = (totalWeight - 6) / (maxWeight - 6); // 0 到 1
-            const currentTotalHeight = lerp(IDLE_TOTAL_HEIGHT, ACTIVE_TOTAL_HEIGHT, ratio);
+            const ratio = (totalWeight - 6) / (HOVER_WEIGHT + 5 - 6);
+            const curSpread = SCREEN_SPREAD_IDLE + (SCREEN_SPREAD_ACTIVE - SCREEN_SPREAD_IDLE) * ratio;
 
-            // 3. 核心逻辑：中心对称计算
-            // 起始 Y 坐标 = 中心线 - (总高度的一半)
-            // 这样无论怎么变，中间那条缝永远在 CENTER_Y 上
-            let currentY = CENTER_Y - (currentTotalHeight / 2);
-            
-            // 记录最上端和最下端的Y，用于绘制内部三角形
-            const topY = currentY;
+            let curExitY = EXIT_CENTER_Y - EXIT_SPREAD / 2;
+            let curScreenY = SCREEN_CENTER_Y - curSpread / 3.5;
 
-            // 4. 绘制外部光束
             for (let i = 0; i < 6; i++) {
-                const height = (currentWeights[i] / totalWeight) * currentTotalHeight;
-                const y1 = currentY;
-                const y2 = currentY + height;
+                const wf = currentWeights[i] / totalWeight;
+                const h_ex = wf * EXIT_SPREAD, h_sc = wf * curSpread;
+                const x_ex_t = P_TOP.x + (curExitY - P_TOP.y) * (P_RIGHT.x - P_TOP.x) / (P_RIGHT.y - P_TOP.y);
+                const x_ex_b = P_TOP.x + (curExitY + h_ex - P_TOP.y) * (P_RIGHT.x - P_TOP.x) / (P_RIGHT.y - P_TOP.y);
 
-                // 绘制梯形：左边是(EXIT_X)，右边是(END_X)
-                // 注意：保持 y1 和 y2 水平延伸，实现"平行"感
-                const d = `M ${EXIT_X} ${y1} L ${END_X} ${y1} L ${END_X} ${y2} L ${EXIT_X} ${y2} Z`;
-                paths[i].setAttribute('d', d);
+                paths[i].setAttribute('d', `M ${x_ex_t} ${curExitY} L ${SCREEN_X} ${curScreenY} L ${SCREEN_X} ${curScreenY + h_sc} L ${x_ex_b} ${curExitY + h_ex} Z`);
+                texts[i].setAttribute('x', SCREEN_X - 250);
+                texts[i].setAttribute('y', curScreenY + h_sc / 2 + 5);
 
-                // 文字位置：放在光束内部左侧
-                const textX = EXIT_X + 20 + (currentWeights[i] * 5); 
-                const textY = y1 + height / 2 + 1;
-                texts[i].setAttribute('x', textX);
-                texts[i].setAttribute('y', textY);
-
-                currentY += height;
+                curExitY += h_ex; curScreenY += h_sc;
             }
 
-            const bottomY = currentY; // 循环结束后的 Y 就是最底部
-
-            // 5. 绘制内部光路 (三角形)
-            // 起点：入射点 ENTRY_POINT
-            // 终点1：出射面最上端 (EXIT_X, topY)
-            // 终点2：出射面最下端 (EXIT_X, bottomY)
-            const internalD = `M ${ENTRY_POINT.x} ${ENTRY_POINT.y} L ${EXIT_X} ${topY} L ${EXIT_X} ${bottomY} Z`;
-            internalLightPath.setAttribute('d', internalD);
+            const p_w_t = P_TOP.x + (EXIT_CENTER_Y - EXIT_SPREAD / 2 - P_TOP.y) * (P_RIGHT.x - P_TOP.x) / (P_RIGHT.y - P_TOP.y);
+            const p_w_b = P_TOP.x + (curExitY - P_TOP.y) * (P_RIGHT.x - P_TOP.x) / (P_RIGHT.y - P_TOP.y);
+            internalPath.setAttribute('d', `M ${ENTRY_POINT.x} ${ENTRY_POINT.y} L ${p_w_t} ${EXIT_CENTER_Y - EXIT_SPREAD / 2} L ${p_w_b} ${curExitY} Z`);
 
             requestAnimationFrame(animate);
         }
 
-        // === 事件监听 ===
         groups.forEach(group => {
-            const index = parseInt(group.getAttribute('data-index'));
-
-            group.addEventListener('mouseenter', () => {
-                for (let i = 0; i < 6; i++) {
-                    targetWeights[i] = (i === index) ? ACTIVE_WEIGHT : NORMAL_WEIGHT;
-                }
-            });
-
-            group.addEventListener('mouseleave', () => {
-                for (let i = 0; i < 6; i++) { targetWeights[i] = NORMAL_WEIGHT; }
-            });
+            const idx = parseInt(group.getAttribute('data-index'));
+            group.addEventListener('mouseenter', () => { for (let i = 0; i < 6; i++) targetWeights[i] = (i === idx) ? HOVER_WEIGHT : 1; });
+            group.addEventListener('mouseleave', () => { for (let i = 0; i < 6; i++) targetWeights[i] = 1; });
         });
-
         animate();
-
     </script>
 </body>
 </html>
