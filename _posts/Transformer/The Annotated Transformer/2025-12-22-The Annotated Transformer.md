@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "The Annotated Transformer"
-date: 2025-12-23 10:00:00 +0800
+date: 2025-12-22 10:00:00 +0800
 categories: ['Transformer', 'The Annotated Transformer']
-tags: ['Transformer', 'The Annotated Transformer']
+tags: ['Transformer']
 math: true
 toc: true
 ---

@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "Toolformer"
-date: 2025-12-23 10:00:00 +0800
+date: 2025-12-22 10:00:00 +0800
 categories: ['ImgAgent', 'agent', 'Toolformer']
-tags: ['ImgAgent', 'agent', 'Toolformer']
+tags: ['ImgAgent', 'agent']
 math: true
 toc: true
 ---
