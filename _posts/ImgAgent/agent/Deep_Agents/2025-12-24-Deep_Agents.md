@@ -3,7 +3,7 @@ layout: post
 title: "Deep Agents"
 date: 2025-12-24 19:21:50 +0800
 categories: ['ImgAgent', 'agent', 'Deep_Agents']
-tags: ['ImgAgent', 'agent', 'Deep_Agents']
+tags: ['ImgAgent', 'agent']
 image: "/images/ImgAgent/agent/Deep_Agents/F_1.png"
 math: true
 toc: true

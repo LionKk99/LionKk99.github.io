@@ -3,7 +3,7 @@ layout: post
 title: "A Comprehensive Survey of Self-Evolving AI Agents"
 date: 2025-12-05 17:11:57 +0800
 categories: ['ImgAgent', 'agent', 'A_Comprehensive_Survey_of_Self-Evolving_AI_Agents']
-tags: ['ImgAgent', 'agent', 'A_Comprehensive_Survey_of_Self-Evolving_AI_Agents']
+tags: ['ImgAgent', 'agent']
 image: "/images/ImgAgent/agent/A_Comprehensive_Survey_of_Self-Evolving_AI_Agents/F1.png"
 math: true
 toc: true

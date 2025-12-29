@@ -3,7 +3,7 @@ layout: post
 title: "Chain-of-Thought"
 date: 2025-12-02 19:24:21 +0800
 categories: ['ImgAgent', 'reasoning', 'Chain-of-Thought']
-tags: ['ImgAgent', 'reasoning', 'Chain-of-Thought']
+tags: ['ImgAgent', 'reasoning']
 image: "/images/ImgAgent/reasoning/Chain-of-Thought/F1.png"
 math: true
 toc: true

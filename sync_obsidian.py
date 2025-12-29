@@ -12,9 +12,31 @@ def slugify_path(path):
     """将路径中的空格替换为下划线，用于 Web 安全路径"""
     return path.replace(" ", "_")
 
+def clean_directory(folder_path):
+    """清空指定文件夹下的所有内容（包括文件和子文件夹），但保留根文件夹"""
+    if not os.path.exists(folder_path):
+        print(f"ℹ️ 目录不存在，无需清理: {folder_path}")
+        return
+
+    print(f"🧹 正在清空目录: {folder_path}")
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path) # 删除文件
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path) # 删除文件夹及其内容
+        except Exception as e:
+            print(f"⚠️ 删除失败 {file_path}. 原因: {e}")
+
 def process_md_files():
+    # --- 0. 先执行清理操作 ---
+    clean_directory(POSTS_DIR)
+    clean_directory(BLOG_IMAGES_BASE)
+
     # 确保目标文件夹存在
     if not os.path.exists(POSTS_DIR): os.makedirs(POSTS_DIR)
+    if not os.path.exists(BLOG_IMAGES_BASE): os.makedirs(BLOG_IMAGES_BASE)
 
     for root, dirs, files in os.walk(OBSIDIAN_BASE):
         for file in files:
@@ -79,46 +101,50 @@ def process_md_files():
 
                 new_content = re.sub(r'!\[\[(.*?)\]\]', img_replace, content)
 
-                # --- 7. 获取文件实际修改时间 (New) ---
-                # 获取文件最后修改时间戳
+                # --- 7. 获取文件实际修改时间 ---
                 mod_time_timestamp = os.path.getmtime(old_path)
-                # 转换为 datetime 对象
                 mod_time_dt = datetime.fromtimestamp(mod_time_timestamp)
-                
-                # 格式化为 Jekyll 需要的格式
-                # 用于文件名的日期前缀 (YYYY-MM-DD)
                 date_prefix = mod_time_dt.strftime("%Y-%m-%d")
-                # 用于 Front Matter 的详细时间 (YYYY-MM-DD HH:MM:SS)
                 full_date_str = mod_time_dt.strftime("%Y-%m-%d %H:%M:%S")
                 
-                # 类别名称通常可以保留原始名称或使用处理后的，这里建议处理
-                categories = [slugify_path(c) for c in rel_dir_raw.split(os.sep)] if rel_dir_raw != "." else ["Uncategorized"]
+                # --- 8. 处理 Categories 和 Tags ---
+                path_parts = rel_dir_raw.split(os.sep) if rel_dir_raw != "." else []
+                
+                # Categories: 保留完整路径
+                categories = [slugify_path(c) for c in path_parts] if path_parts else ["Uncategorized"]
+                
+                # Tags: 移除最后一个路径 (只保留前面的路径)
+                if len(path_parts) > 1:
+                    tags_source = path_parts[:-1]
+                    tags = [slugify_path(c) for c in tags_source]
+                else:
+                    tags = []
+
                 image_field = f'image: "{featured_image}"' if featured_image else ""
                 
-                # 生成 Front Matter，使用文件的实际修改时间
+                # 生成 Front Matter
                 front_matter = f"""---
 layout: post
 title: "{pure_name}"
 date: {full_date_str} +0800
 categories: {categories}
-tags: {categories}
+tags: {tags}
 {image_field}
 math: true
 toc: true
 ---
 
 """
-                # 8. 写入新文件
+                # 9. 写入新文件
                 safe_pure_name = slugify_path(pure_name)
-                # 文件名依然使用 YYYY-MM-DD 前缀
                 new_file_name = f"{date_prefix}-{safe_pure_name}.md"
                 final_dest_path = os.path.join(current_post_md_dir, new_file_name)
                 
                 with open(final_dest_path, 'w', encoding='utf-8') as f:
                     f.write(front_matter + new_content)
                 
-                print(f"✅ 已同步 (使用文件时间 {full_date_str}): {final_dest_path}")
+                print(f"✅ 已同步: {final_dest_path}")
 
 if __name__ == "__main__":
     process_md_files()
-    print("\n--- 镜像同步完成：日期已更新为文件修改时间 ---")
+    print("\n--- 镜像同步完成：目标目录已清空并重新生成 ---")

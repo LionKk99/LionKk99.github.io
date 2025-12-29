@@ -3,7 +3,7 @@ layout: post
 title: "The Illustrated Stable Diffusion"
 date: 2025-12-25 20:55:17 +0800
 categories: ['Transformer', 'The_Illustrated_Stable_Diffusion']
-tags: ['Transformer', 'The_Illustrated_Stable_Diffusion']
+tags: ['Transformer']
 image: "/images/Transformer/The_Illustrated_Stable_Diffusion/F.png"
 math: true
 toc: true

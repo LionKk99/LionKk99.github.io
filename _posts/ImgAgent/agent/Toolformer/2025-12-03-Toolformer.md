@@ -3,7 +3,7 @@ layout: post
 title: "Toolformer"
 date: 2025-12-03 15:50:04 +0800
 categories: ['ImgAgent', 'agent', 'Toolformer']
-tags: ['ImgAgent', 'agent', 'Toolformer']
+tags: ['ImgAgent', 'agent']
 image: "/images/ImgAgent/agent/Toolformer/F1.png"
 math: true
 toc: true

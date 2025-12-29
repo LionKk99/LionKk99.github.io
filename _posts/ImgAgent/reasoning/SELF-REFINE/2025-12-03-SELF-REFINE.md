@@ -3,7 +3,7 @@ layout: post
 title: "SELF-REFINE"
 date: 2025-12-03 13:20:27 +0800
 categories: ['ImgAgent', 'reasoning', 'SELF-REFINE']
-tags: ['ImgAgent', 'reasoning', 'SELF-REFINE']
+tags: ['ImgAgent', 'reasoning']
 image: "/images/ImgAgent/reasoning/SELF-REFINE/F1.png"
 math: true
 toc: true

@@ -3,7 +3,7 @@ layout: post
 title: "illustrated-transformer"
 date: 2025-12-25 18:11:17 +0800
 categories: ['Transformer', 'The_Illustrated-transformer']
-tags: ['Transformer', 'The_Illustrated-transformer']
+tags: ['Transformer']
 image: "/images/Transformer/The_Illustrated-transformer/F1.png"
 math: true
 toc: true

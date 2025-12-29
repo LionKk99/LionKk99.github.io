@@ -3,7 +3,7 @@ layout: post
 title: "Equipping agents for the real world with Agent Skills"
 date: 2025-12-24 19:18:58 +0800
 categories: ['ImgAgent', 'agent', 'Equipping_agents_for_the_real_world_with_Agent_Skills']
-tags: ['ImgAgent', 'agent', 'Equipping_agents_for_the_real_world_with_Agent_Skills']
+tags: ['ImgAgent', 'agent']
 image: "/images/ImgAgent/agent/Equipping_agents_for_the_real_world_with_Agent_Skills/F.png"
 math: true
 toc: true
