@@ -1,7 +1,7 @@
 import os
 import re
 import shutil
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # --- 路径配置 ---
 OBSIDIAN_BASE = r"D:\github-repo\LionKk99.github.io\Obsidian_projects"
@@ -79,18 +79,27 @@ def process_md_files():
 
                 new_content = re.sub(r'!\[\[(.*?)\]\]', img_replace, content)
 
-                # 7. 生成 Front Matter
-                yesterday = datetime.now() - timedelta(days=1)
-                date_prefix = yesterday.strftime("%Y-%m-%d")
+                # --- 7. 获取文件实际修改时间 (New) ---
+                # 获取文件最后修改时间戳
+                mod_time_timestamp = os.path.getmtime(old_path)
+                # 转换为 datetime 对象
+                mod_time_dt = datetime.fromtimestamp(mod_time_timestamp)
+                
+                # 格式化为 Jekyll 需要的格式
+                # 用于文件名的日期前缀 (YYYY-MM-DD)
+                date_prefix = mod_time_dt.strftime("%Y-%m-%d")
+                # 用于 Front Matter 的详细时间 (YYYY-MM-DD HH:MM:SS)
+                full_date_str = mod_time_dt.strftime("%Y-%m-%d %H:%M:%S")
                 
                 # 类别名称通常可以保留原始名称或使用处理后的，这里建议处理
                 categories = [slugify_path(c) for c in rel_dir_raw.split(os.sep)] if rel_dir_raw != "." else ["Uncategorized"]
                 image_field = f'image: "{featured_image}"' if featured_image else ""
                 
+                # 生成 Front Matter，使用文件的实际修改时间
                 front_matter = f"""---
 layout: post
 title: "{pure_name}"
-date: {date_prefix} 10:00:00 +0800
+date: {full_date_str} +0800
 categories: {categories}
 tags: {categories}
 {image_field}
@@ -99,17 +108,17 @@ toc: true
 ---
 
 """
-                # 8. 写入新文件 (标题中的空格建议保留在 title 字段，但文件名中已由系统处理)
-                # 注意：pure_name 是文件名，建议也做去空格处理以防 URL 乱码
+                # 8. 写入新文件
                 safe_pure_name = slugify_path(pure_name)
+                # 文件名依然使用 YYYY-MM-DD 前缀
                 new_file_name = f"{date_prefix}-{safe_pure_name}.md"
                 final_dest_path = os.path.join(current_post_md_dir, new_file_name)
                 
                 with open(final_dest_path, 'w', encoding='utf-8') as f:
                     f.write(front_matter + new_content)
                 
-                print(f"✅ 已同步 (去空格处理): {final_dest_path}")
+                print(f"✅ 已同步 (使用文件时间 {full_date_str}): {final_dest_path}")
 
 if __name__ == "__main__":
     process_md_files()
-    print("\n--- 镜像同步完成：所有路径与文件名均已处理为空格安全格式 ---")
+    print("\n--- 镜像同步完成：日期已更新为文件修改时间 ---")
